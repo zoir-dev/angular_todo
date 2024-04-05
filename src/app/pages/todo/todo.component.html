@@ -1,0 +1,97 @@
+<div
+  class="h-screen dark:bg-slate-700 dark:text-white dark: transition-all duration-300"
+>
+  <app-header></app-header>
+  <div class="pt-10 w-full flex justify-center items-center">
+    <div
+      class="w-full max-w-[600px] flex flex-col shadow-lg rounded-md transition-all duration-300 dark:bg-slate-800 p-4"
+    >
+      <h1 class="text-center">Todos</h1>
+      <div class="flex items-center gap-4">
+        <input
+          type="text"
+          class="bg-transparent py-2 px-3 text-base capitalize w-full outline-none border-2 rounded-md dark:border-slate-700 duration-300 transition-all"
+          placeholder="Enter todo name"
+          #valRef
+          [value]="val"
+          (change)="this.val = valRef.value"
+          (keyup.enter)="addTodo()"
+        />
+        <button
+          mat-icon-button
+          color="accent"
+          (click)="editingTodo = -1; val = ''"
+          *ngIf="editingTodo !== -1"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          color="accent"
+          (click)="editTodo()"
+          *ngIf="editingTodo !== -1; else add"
+        >
+          <mat-spinner
+            *ngIf="loading === 'edit'; else editIcon"
+            diameter="24"
+            color="accent"
+          ></mat-spinner>
+          <ng-template #editIcon>
+            <mat-icon>edit</mat-icon>
+          </ng-template>
+        </button>
+        <ng-template #add>
+          <button mat-icon-button color="accent" (click)="addTodo()">
+            <mat-spinner
+              *ngIf="loading === 'add'; else addIcon"
+              diameter="24"
+              color="accent"
+            ></mat-spinner>
+            <ng-template #addIcon>
+              <mat-icon>add</mat-icon>
+            </ng-template>
+          </button>
+        </ng-template>
+      </div>
+      <div
+        class="pt-4 flex flex-col min-h-[40vh] max-h-[60vh] overflow-y-auto"
+        cdkDropList
+        (cdkDropListDropped)="drop($event)"
+      >
+        <div
+          class="flex items-center justify-between py-1 bg-white dark:bg-slate-800 cursor-move transition-all duration-100"
+          cdkDrag
+          *ngFor="let todo of todos"
+        >
+          <div
+            class="min-h-[56px] bg-gray-400 dark:bg-slate-700 transition-transform duration-100"
+            *cdkDragPlaceholder
+          ></div>
+          <p class="text-lg">{{ todo.name }}</p>
+          <div class="flex items-center">
+            <button mat-icon-button color="warn" (click)="deleteTodo(todo.id)">
+              <mat-spinner
+                *ngIf="
+                  loading === 'delete' && deletingTodo === todo.id;
+                  else deleteIcon
+                "
+                diameter="24"
+                color="warn"
+              ></mat-spinner>
+              <ng-template #deleteIcon>
+                <mat-icon class="text-xl">delete</mat-icon>
+              </ng-template>
+            </button>
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="editingTodo = todo.id; val = todo.name"
+            >
+              <mat-icon class="text-xl">edit</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
